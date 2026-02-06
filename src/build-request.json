@@ -1,0 +1,127 @@
+{
+  "kind": "build_request",
+  "title": "Add XLSX import/export buttons (and PDF export) in Import / Export section",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-27",
+      "text": "Update the DataEntryPage \"Import / Export\" action area to provide exactly these three controls (and remove the current CSV/Text controls): \"Export XLSX\", \"Export PDF\", and \"Import XLSX\" (file picker). All user-facing labels and messages must be in English.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Add xlsx. Button import export"
+        ]
+      },
+      "acceptanceCriteria": [
+        "In frontend/src/pages/DataEntryPage.tsx, the Import / Export card shows three controls: Export XLSX, Export PDF, Import XLSX.",
+        "The existing buttons \"Export CSV\", \"Export Text\", and \"Import CSV\" are no longer shown.",
+        "The file input only accepts .xlsx files (e.g., accept=\".xlsx\").",
+        "All user-facing text for these controls and any related toasts/errors is English-only."
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "text": "Implement client-side \"Export XLSX\" so the user can download an .xlsx file generated from the currently loaded saved entries (the same dataset shown in EntriesTable). The exported sheet must include columns: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Add xlsx. Button import export"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Clicking \"Export XLSX\" downloads an .xlsx file when there is at least one loaded entry.",
+        "If there are no loaded entries, show an English error toast (e.g., \"No entries to export\").",
+        "The exported XLSX contains a header row with exactly: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+        "Each exported row matches the currently loaded entries (including DAYS derived from Manual Date)."
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "text": "Implement client-side \"Export PDF\" so the user can download a PDF generated on the client containing a simple table of the currently loaded saved entries using the same columns as the XLSX export: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Add xlsx. Button import export"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Clicking \"Export PDF\" downloads a .pdf file when there is at least one loaded entry.",
+        "If there are no loaded entries, show an English error toast (e.g., \"No entries to export\").",
+        "The PDF contains a readable table (or equivalent structured layout) with the same columns as XLSX export: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At."
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "text": "Implement \"Import XLSX\" so the user can select an .xlsx file, parse rows into entries, validate required fields (Manual Date, Customer Name, Mobile Number, Amount (Rs.) > 0) using the existing frontend validation rules, and create entries by calling the existing createEntry mutation for each valid row (respect authentication gating).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Add xlsx. Button import export"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When not authenticated, attempting to import shows the existing English sign-in prompt message and does not open the file picker.",
+        "When authenticated, selecting an .xlsx file parses rows into candidate entries.",
+        "Each row is validated using existing validation rules (required fields; digits-only mobile number with length check; Amount (Rs.) > 0).",
+        "Valid rows are imported by calling the existing createEntry mutation per row.",
+        "After import completes, the entries list query is invalidated/refreshed so the new entries appear in EntriesTable.",
+        "The UI shows an English summary toast indicating counts of successfully imported entries and failed rows."
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "text": "Add robust error handling for the XLSX/PDF import/export flows: show clear English toast messages for unsupported/empty files, file parse errors, and per-row validation failures; do not break existing entry create/edit/delete/list flows.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Add xlsx. Button import export"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Selecting a non-.xlsx file for import shows an English error toast (e.g., \"Please select a valid XLSX file\").",
+        "Selecting an empty or unreadable XLSX file shows an English error toast describing the problem.",
+        "If the XLSX contains rows but none are valid, an English error toast explains that no valid rows were found.",
+        "Per-row validation failures are handled without crashing the import; the import continues for other rows and the final summary reflects failures.",
+        "Existing CRUD operations and EntriesTable rendering continue to work as before."
+      ]
+    }
+  ],
+  "constraints": [
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Keep backend as a single Motoko actor; no backend changes are required for client-side import/export."
+  ],
+  "nonGoals": [
+    "Do not add or rely on any external database or non-IC backend service.",
+    "Do not implement CSV or plain-text export/import as part of this change (the UI should focus on XLSX/PDF as requested).",
+    "Do not change entry schema or backend APIs for import/export."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

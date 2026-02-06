@@ -1,2 +1,3 @@
-# data-entry-form-for-date-customer-name-mobile-number-and-amount-rs
-Exported from Caffeine project: Data entry form for date, customer name, mobile number, and amount (Rs.)
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

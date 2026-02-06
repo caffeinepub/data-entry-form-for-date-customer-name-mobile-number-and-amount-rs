@@ -1,0 +1,316 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 19,
+  "summary": "Expand the app from create-and-list entries to full CRUD, and add import/export capabilities (XLSX and PDF) for saved entries.",
+  "architectural_notes": [
+    "Define the 'calculate days from Manual Date' rule (e.g., days since Manual Date relative to today) and ensure consistent timezone handling for date math.",
+    "Plan an analytics aggregation layer (monthly/yearly buckets) derived from stored entries to power chart components.",
+    "Backend createEntry is restricted to authenticated principals; frontend should enforce/guide Internet Identity sign-in and handle unauthorized responses explicitly.",
+    "Plan CRUD support for entries: add stable identifiers and backend methods for updateEntry/deleteEntry, and ensure list refresh/invalidation after edits/deletes.",
+    "Plan import/export for entries: define the XLSX column schema and validation/mapping rules for import, and choose a frontend approach/library for generating XLSX and PDF from the current entries list."
+  ],
+  "known_issues": [
+    "Form submission failing with error message: \"Failed to save entry. Please try again.\" (likely backend create-entry/storage or integration issue).",
+    "Deployment/domain configuration error: custom domain value like \"sut.pratik\" / \"sut.pratik2020\" is invalid (must be 5–50 chars, only letters/numbers/hyphens); this may be blocking or confusing entry-save flow testing.",
+    "Create entry fails with \"Unauthorized: Only users can create entries\" when not authenticated; the app needs better auth gating/sign-in prompting or backend auth rule adjustment."
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-a-frontend-data-entry-page-with-a-form-containing-these-inputs-manual-date-date-picker-customer-name-text-mobile-number-tel-text-and-amount-rs-number-all-user-facing-labels-and-messages-must-be-in-english",
+      "title": "Create a frontend data entry page with a form containing these inputs: Manual Date (date picker), Customer Name (text), Mobile Number (tel/text), and Amount (Rs.) (number). All user-facing labels and messages must be in English.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-client-side-validation-for-the-data-entry-form-all-fields-required-mobile-number-must-be-digits-only-with-a-reasonable-length-check-e-g-10-15-digits-amount-rs-must-be-greater-than-0-show-inline-validation-messages-and-prevent-submission-when-invalid",
+      "title": "Add client-side validation for the data entry form: all fields required; Mobile Number must be digits-only with a reasonable length check (e.g., 10–15 digits); Amount (Rs.) must be greater than 0; show inline validation messages and prevent submission when invalid.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-connect-the-frontend-form-submission-to-the-backend-create-entry-method-using-react-query-show-loading-state-during-submit-on-success-clear-the-form-and-show-a-confirmation-message-on-failure-show-an-english-error-message",
+      "title": "Connect the frontend form submission to the backend create-entry method using React Query; show loading state during submit; on success, clear the form and show a confirmation message; on failure, show an English error message.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-frontend-view-below-or-next-to-the-form-that-displays-a-table-list-of-previously-saved-entries-with-columns-manual-date-customer-name-mobile-number-amount-rs-created-at-refresh-the-list-after-a-successful-submission",
+      "title": "Add a frontend view below (or next to) the form that displays a table/list of previously saved entries with columns: Manual Date, Customer Name, Mobile Number, Amount (Rs.), Created At; refresh the list after a successful submission.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-coherent-creative-visual-theme-colors-typography-spacing-and-component-styling-consistently-across-the-form-and-entries-list-using-tailwind-and-existing-ui-components-avoid-a-blue-purple-primary-palette",
+      "title": "Apply a coherent, creative visual theme (colors, typography, spacing, and component styling) consistently across the form and entries list, using Tailwind and existing UI components; avoid a blue/purple primary palette.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-derive-and-display-a-days-since-manual-date-value-based-on-each-entry-s-manual-date",
+      "title": "Derive and display a “Days Since Manual Date” value based on each entry’s Manual Date.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-analytics-section-that-shows-monthly-and-yearly-graphs-with-color-based-on-saved-entries",
+      "title": "Add an analytics section that shows monthly and yearly graphs with color, based on saved entries.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-frontend-create-entry-integration-to-match-the-backend-s-updated-createentry-api-and-to-surface-actionable-error-details-to-the-user-specifically-1-stop-sending-createdat-if-the-backend-now-generates-it-2-handle-the-backend-s-structured-error-response-and-display-an-english-toast-message-that-includes-the-backend-provided-reason-3-keep-the-existing-success-behavior-clear-the-form-show-success-toast-and-refresh-invalidate-the-entries-query",
+      "title": "Update the frontend create-entry integration to match the backend’s updated createEntry API and to surface actionable error details to the user. Specifically: (1) stop sending createdAt if the backend now generates it; (2) handle the backend’s structured error response and display an English toast message that includes the backend-provided reason; (3) keep the existing success behavior (clear the form, show success toast, and refresh/invalidate the entries query).",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-authentication-aware-ux-on-the-dataentrypage-so-users-can-sign-in-out-with-internet-identity-and-clearly-see-whether-they-are-authenticated-before-attempting-to-save-entries",
+      "title": "Add an authentication-aware UX on the DataEntryPage so users can sign in/out with Internet Identity and clearly see whether they are authenticated before attempting to save entries.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-prevent-unauthorized-create-entry-attempts-by-gating-submission-in-the-ui-when-the-user-is-not-authenticated-and-provide-a-clear-sign-in-prompt-instead-of-allowing-the-backend-to-trap",
+      "title": "Prevent unauthorized create-entry attempts by gating submission in the UI when the user is not authenticated, and provide a clear sign-in prompt instead of allowing the backend to trap.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-improve-frontend-error-handling-for-authorization-failures-by-mapping-backend-unauthorized-traps-rejects-during-createentry-and-listentriesnewestfirst-to-actionable-english-ui-messages-sign-in-prompt-rather-than-generic-failure-text",
+      "title": "Improve frontend error handling for authorization failures by mapping backend \"Unauthorized\" traps/rejects during createEntry and listEntriesNewestFirst to actionable English UI messages (sign-in prompt), rather than generic failure text.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-react-query-client-support-for-updating-and-deleting-entries-calling-the-new-backend-methods-and-surfacing-actionable-english-error-messages-including-mapping-authorization-failures-to-a-sign-in-prompt-message",
+      "title": "Add React Query client support for updating and deleting entries, calling the new backend methods and surfacing actionable English error messages (including mapping authorization failures to a sign-in prompt message).",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-edit-option-in-the-entries-table-ui-that-allows-the-user-to-modify-an-existing-entry-s-manual-date-customer-name-mobile-number-and-amount-rs-with-the-same-client-side-validation-as-the-create-form-and-save-changes-via-the-update-mutation",
+      "title": "Add an edit option in the entries table UI that allows the user to modify an existing entry’s Manual Date, Customer Name, Mobile Number, and Amount (Rs.) with the same client-side validation as the create form, and save changes via the update mutation.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-delete-option-in-the-entries-table-ui-that-allows-the-user-to-remove-an-entry-with-a-confirmation-step-and-clear-english-success-failure-messaging",
+      "title": "Add a delete option in the entries table UI that allows the user to remove an entry, with a confirmation step and clear English success/failure messaging.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-user-facing-label-text-days-since-manual-date-with-days-everywhere-it-is-displayed-in-the-frontend-ui-including-the-entries-table-column-header",
+      "title": "Replace the user-facing label text \"Days Since Manual Date\" with \"DAYS\" everywhere it is displayed in the frontend UI (including the entries table column header).",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-compact-import-export-action-area-in-the-dataentrypage-ui-near-the-saved-entries-section-with-three-controls-export-xlsx-export-pdf-and-import-xlsx-file-picker-all-user-facing-labels-and-messages-must-be-in-english",
+      "title": "Add a compact \"Import / Export\" action area in the DataEntryPage UI (near the Saved Entries section) with three controls: \"Export XLSX\", \"Export PDF\", and \"Import XLSX\" (file picker). All user-facing labels and messages must be in English.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-export-xlsx-to-download-an-xlsx-file-generated-on-the-client-from-the-currently-loaded-saved-entries-the-same-dataset-used-by-entriestable-the-exported-sheet-must-include-columns-for-manual-date-days-customer-name-mobile-number-amount-rs-created-at",
+      "title": "Implement \"Export XLSX\" to download an .xlsx file generated on the client from the currently loaded saved entries (the same dataset used by EntriesTable). The exported sheet must include columns for: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-export-pdf-to-download-a-pdf-generated-on-the-client-containing-a-simple-table-of-the-currently-loaded-saved-entries-same-columns-as-xlsx-export-manual-date-days-customer-name-mobile-number-amount-rs-created-at",
+      "title": "Implement \"Export PDF\" to download a PDF generated on the client containing a simple table of the currently loaded saved entries (same columns as XLSX export: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At).",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-import-xlsx-to-allow-selecting-an-xlsx-file-parsing-rows-into-entries-validating-required-fields-manual-date-customer-name-mobile-number-amount-rs-0-using-the-existing-frontend-validation-rules-and-creating-entries-by-calling-the-existing-createentry-mutation-for-each-valid-row-respecting-authentication-gating",
+      "title": "Implement \"Import XLSX\" to allow selecting an .xlsx file, parsing rows into entries, validating required fields (Manual Date, Customer Name, Mobile Number, Amount (Rs.) > 0) using the existing frontend validation rules, and creating entries by calling the existing createEntry mutation for each valid row (respecting authentication gating).",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-robust-error-handling-for-import-export-flows-show-clear-english-toast-messages-for-file-parse-errors-unsupported-empty-files-and-per-row-validation-failures-do-not-break-existing-entry-crud-flows",
+      "title": "Add robust error handling for import/export flows: show clear English toast messages for file parse errors, unsupported/empty files, and per-row validation failures; do not break existing entry CRUD flows.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-dataentrypage-import-export-action-area-to-provide-exactly-these-three-controls-and-remove-the-current-csv-text-controls-export-xlsx-export-pdf-and-import-xlsx-file-picker-all-user-facing-labels-and-messages-must-be-in-english",
+      "title": "Update the DataEntryPage \"Import / Export\" action area to provide exactly these three controls (and remove the current CSV/Text controls): \"Export XLSX\", \"Export PDF\", and \"Import XLSX\" (file picker). All user-facing labels and messages must be in English.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-client-side-export-xlsx-so-the-user-can-download-an-xlsx-file-generated-from-the-currently-loaded-saved-entries-the-same-dataset-shown-in-entriestable-the-exported-sheet-must-include-columns-manual-date-days-customer-name-mobile-number-amount-rs-created-at",
+      "title": "Implement client-side \"Export XLSX\" so the user can download an .xlsx file generated from the currently loaded saved entries (the same dataset shown in EntriesTable). The exported sheet must include columns: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-client-side-export-pdf-so-the-user-can-download-a-pdf-generated-on-the-client-containing-a-simple-table-of-the-currently-loaded-saved-entries-using-the-same-columns-as-the-xlsx-export-manual-date-days-customer-name-mobile-number-amount-rs-created-at",
+      "title": "Implement client-side \"Export PDF\" so the user can download a PDF generated on the client containing a simple table of the currently loaded saved entries using the same columns as the XLSX export: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-import-xlsx-so-the-user-can-select-an-xlsx-file-parse-rows-into-entries-validate-required-fields-manual-date-customer-name-mobile-number-amount-rs-0-using-the-existing-frontend-validation-rules-and-create-entries-by-calling-the-existing-createentry-mutation-for-each-valid-row-respect-authentication-gating",
+      "title": "Implement \"Import XLSX\" so the user can select an .xlsx file, parse rows into entries, validate required fields (Manual Date, Customer Name, Mobile Number, Amount (Rs.) > 0) using the existing frontend validation rules, and create entries by calling the existing createEntry mutation for each valid row (respect authentication gating).",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-robust-error-handling-for-the-xlsx-pdf-import-export-flows-show-clear-english-toast-messages-for-unsupported-empty-files-file-parse-errors-and-per-row-validation-failures-do-not-break-existing-entry-create-edit-delete-list-flows",
+      "title": "Add robust error handling for the XLSX/PDF import/export flows: show clear English toast messages for unsupported/empty files, file parse errors, and per-row validation failures; do not break existing entry create/edit/delete/list flows.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Build a data entry form with fields: manual date, customer name, mobile number, and RS (amount).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Implement backend storage for submitted entries in the single Motoko main actor, including a stable data structure to store records with: id, manualDate, customerName, mobileNumber, amountRs, createdAt. Provide methods to create an entry and list entries (most-recent-first).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add a calculation that derives and displays the number of days based on the Manual Date (e.g., days since the selected date).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add analytics views with monthly and yearly graphs based on saved entries, using colored chart visuals.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Fix the backend entry-creation flow so that creating an entry never fails silently or traps unexpectedly, and so saved entries are reliably persisted and returned by listing. Update the Motoko backend to: (1) validate all required fields (manualDate, customerName, mobileNumber) and enforce amountRs > 0; (2) avoid Runtime.trap for expected validation failures and instead return a structured error that the frontend can display; (3) set createdAt on the backend using the canister time (do not require the client to provide createdAt); (4) store entries in a stable structure so they persist across upgrades, and ensure listEntriesNewestFirst returns most-recent-first based on createdAt.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Update backend entry creation and listing so expected failures do not use Runtime.trap; instead, return an actionable structured error that the frontend can display, preventing the generic \"Failed to save entry. Please try again.\" when the backend rejects a request.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Patch backend storage so entries are reliably persisted across canister upgrades by using stable storage and proper preupgrade/postupgrade (or equivalent) state serialization/deserialization, while keeping listEntriesNewestFirst returning most-recent-first by createdAt.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Add backend-side input hardening for createEntry to reduce accidental traps and improve error reporting consistency (e.g., handle whitespace-only strings as empty for manualDate/customerName/mobileNumber). All returned messages must be in English.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Patch the create-entry flow to address the \"Unauthorized: Only users can create entries\" failure by handling authentication correctly (ensure user is signed in with Internet Identity before calling createEntry, and surface a clear sign-in prompt/UX when unauthorized).",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Add edit and delete options for saved entries (CRUD): allow users to update an existing entry and remove an entry from the list/storage, with appropriate UI actions and backend support.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Extend the Motoko backend entry API to support updating and deleting an existing saved entry by id, with authorization checks and structured, English error responses (no Runtime.trap for expected failures).",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Change the UI label/text \"Days Since Manual Date\" to \"DAYS\" wherever it is displayed.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Add Import/Export buttons to allow exporting saved entries to XLSX and PDF, and importing entries from an XLSX file.",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Data entry form for date, customer name, mobile number, and amount (Rs.)",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

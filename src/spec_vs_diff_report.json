@@ -1,0 +1,93 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-06T15:54:38.147Z",
+  "summary": "The diff adds new XLSX/PDF utility modules and an XLSX import parser, and updates DataEntryPage to use them. However, the implementation largely uses CSV-as-text (and downloads .csv) rather than generating/parsing real .xlsx files, and the PDF export opens a printable HTML window rather than downloading a .pdf file. The import parser explicitly supports .csv as well, which conflicts with the request to focus strictly on XLSX/PDF and remove CSV/Text controls.",
+  "missing_requirements": [
+    {
+      "id": "REQ-27",
+      "requirement": "Update the DataEntryPage Import/Export area to show exactly three controls (Export XLSX, Export PDF, Import XLSX) and remove current CSV/Text controls; file input accepts only .xlsx; all labels/messages in English.",
+      "reason": "The diff summary indicates the Import/Export card includes “Excel-compatible CSV export” and “CSV/XLSX import”, suggesting CSV controls and/or behavior remain rather than being removed and replaced with exactly the three requested controls. The accept=\".xlsx\" constraint is not evidenced in the provided truncated DataEntryPage diff.",
+      "evidence": [
+        "frontend-file-summaries.txt (DataEntryPage summary mentions \"Excel-compatible CSV export\" and \"CSV/XLSX import\")",
+        "frontend/src/pages/DataEntryPage.tsx (truncated; cannot confirm exactly three controls or accept=\".xlsx\")"
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "requirement": "Implement client-side Export XLSX that downloads an .xlsx file generated from loaded entries with header row exactly: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At; show English toast if no entries.",
+      "reason": "The added export function generates CSV content and triggers a download with a .csv filename (not .xlsx). This does not satisfy generating/downloading an actual .xlsx file.",
+      "evidence": [
+        "frontend/src/utils/entriesXlsxExport.ts (generates CSV; Blob type text/csv; link download uses filename.replace('.xlsx', '.csv'))"
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "requirement": "Implement client-side Export PDF that downloads a .pdf containing a table of loaded entries with the same columns as XLSX export; show English toast if no entries.",
+      "reason": "The PDF export opens a new window with HTML and a “Print / Save as PDF” button rather than generating and downloading a .pdf file.",
+      "evidence": [
+        "frontend/src/utils/entriesPdfExport.ts (\"Opens a new window\"; uses window.open and window.print; no PDF bytes/download generated)"
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "requirement": "Implement Import XLSX: when authenticated allow selecting an .xlsx file, parse rows, validate required fields using existing validation, call existing createEntry mutation per valid row, refresh entries list, and show English summary toast; when not authenticated show existing sign-in prompt and do not open file picker.",
+      "reason": "The provided import parser reads the file as text and parses CSV lines; it explicitly claims to accept both .xlsx and .csv by treating them as CSV format, which is not true XLSX parsing. Also, the authentication gating behavior and post-import query invalidation/toast summary cannot be confirmed from the truncated DataEntryPage diff.",
+      "evidence": [
+        "frontend/src/utils/entriesXlsxImport.ts (reads as text; parseCSVLine; comment: \"Accepts both .xlsx and .csv files, treating them as CSV format\")",
+        "frontend/src/pages/DataEntryPage.tsx (truncated; cannot verify auth-gated file picker behavior, per-row createEntry calls, and refresh/summary toast)"
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "requirement": "Robust error handling for XLSX/PDF flows including non-.xlsx file selection error, empty/unreadable XLSX error, none-valid-rows error, per-row failures without crashing, and preserve existing CRUD/table flows.",
+      "reason": "Because DataEntryPage changes are truncated, the presence of required user-facing toasts (non-.xlsx selection, empty/unreadable, none-valid-rows) and final summary behavior cannot be verified. Additionally, the import utility is designed to accept .csv as well, which undermines the non-.xlsx handling requirement.",
+      "evidence": [
+        "frontend/src/utils/entriesXlsxImport.ts (states it accepts .xlsx and .csv; no enforcement of .xlsx-only)",
+        "frontend/src/pages/DataEntryPage.tsx (truncated; error/toast behavior not verifiable from diff summary)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "“XLSX export” implemented as CSV generation and downloads a .csv file (CSV masquerading as XLSX).",
+      "reason": "The request requires generating/downloading an actual .xlsx file; the diff implements CSV export instead.",
+      "evidence": [
+        "frontend/src/utils/entriesXlsxExport.ts (CSV content; download filename changed to .csv)"
+      ]
+    },
+    {
+      "description": "Import supports .csv files and treats .xlsx files as CSV text rather than parsing real XLSX format.",
+      "reason": "Non-goals/requirements indicate UI should focus on XLSX/PDF and not implement CSV import/export as part of this change.",
+      "evidence": [
+        "frontend/src/utils/entriesXlsxImport.ts (\"Accepts both .xlsx and .csv files, treating them as CSV format\")",
+        "frontend-file-summaries.txt (DataEntryPage summary mentions \"CSV/XLSX import\")"
+      ]
+    },
+    {
+      "description": "PDF export implemented as opening a printable HTML page with a print button instead of downloading a generated PDF file.",
+      "reason": "REQ-29 specifically requires downloading a .pdf generated on the client.",
+      "evidence": [
+        "frontend/src/utils/entriesPdfExport.ts (window.open + HTML + window.print; no PDF generation/download)"
+      ]
+    },
+    {
+      "description": "Added dependencies and type declarations for SheetJS (xlsx) and jsPDF/jspdf-autotable without evidence they are used in the shown export/import implementations.",
+      "reason": "The diff summary indicates these libraries were added, but the added export/import code shown uses CSV parsing and HTML printing instead of these libraries.",
+      "evidence": [
+        "frontend-file-summaries.txt (mentions dependencies including SheetJS and jsPDF with jspdf-autotable; mentions added type declaration files)",
+        "frontend/src/utils/entriesXlsxExport.ts (no SheetJS usage)",
+        "frontend/src/utils/entriesPdfExport.ts (no jsPDF usage)"
+      ]
+    }
+  ],
+  "confidence": 0.74,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/pages/DataEntryPage.tsx",
+    "frontend/src/utils/entriesPdfExport.ts",
+    "frontend/src/utils/entriesXlsxExport.ts",
+    "frontend/src/utils/entriesXlsxImport.ts",
+    "project_state.json"
+  ]
+}

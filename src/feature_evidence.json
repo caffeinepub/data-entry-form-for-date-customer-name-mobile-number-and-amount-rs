@@ -1,0 +1,106 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-update-the-dataentrypage-import-export-action-area-to-provide-exactly-these-three-controls-and-remove-the-current-csv-text-controls-export-xlsx-export-pdf-and-import-xlsx-file-picker-all-user-facing-labels-and-messages-must-be-in-english",
+      "featureTitle": "Update the DataEntryPage \"Import / Export\" action area to provide exactly these three controls (and remove the current CSV/Text controls): \"Export XLSX\", \"Export PDF\", and \"Import XLSX\" (file picker). All user-facing labels and messages must be in English.",
+      "files": [
+        "frontend/src/pages/DataEntryPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-27"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-client-side-export-xlsx-so-the-user-can-download-an-xlsx-file-generated-from-the-currently-loaded-saved-entries-the-same-dataset-shown-in-entriestable-the-exported-sheet-must-include-columns-manual-date-days-customer-name-mobile-number-amount-rs-created-at",
+      "featureTitle": "Implement client-side \"Export XLSX\" so the user can download an .xlsx file generated from the currently loaded saved entries (the same dataset shown in EntriesTable). The exported sheet must include columns: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+      "files": [
+        "frontend/src/pages/DataEntryPage.tsx",
+        "frontend/src/utils/entriesXlsxExport.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-28"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-client-side-export-pdf-so-the-user-can-download-a-pdf-generated-on-the-client-containing-a-simple-table-of-the-currently-loaded-saved-entries-using-the-same-columns-as-the-xlsx-export-manual-date-days-customer-name-mobile-number-amount-rs-created-at",
+      "featureTitle": "Implement client-side \"Export PDF\" so the user can download a PDF generated on the client containing a simple table of the currently loaded saved entries using the same columns as the XLSX export: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+      "files": [
+        "frontend/src/pages/DataEntryPage.tsx",
+        "frontend/src/utils/entriesPdfExport.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-29"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-import-xlsx-so-the-user-can-select-an-xlsx-file-parse-rows-into-entries-validate-required-fields-manual-date-customer-name-mobile-number-amount-rs-0-using-the-existing-frontend-validation-rules-and-create-entries-by-calling-the-existing-createentry-mutation-for-each-valid-row-respect-authentication-gating",
+      "featureTitle": "Implement \"Import XLSX\" so the user can select an .xlsx file, parse rows into entries, validate required fields (Manual Date, Customer Name, Mobile Number, Amount (Rs.) > 0) using the existing frontend validation rules, and create entries by calling the existing createEntry mutation for each valid row (respect authentication gating).",
+      "files": [
+        "frontend/src/pages/DataEntryPage.tsx",
+        "frontend/src/utils/entriesXlsxImport.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-30"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-robust-error-handling-for-the-xlsx-pdf-import-export-flows-show-clear-english-toast-messages-for-unsupported-empty-files-file-parse-errors-and-per-row-validation-failures-do-not-break-existing-entry-create-edit-delete-list-flows",
+      "featureTitle": "Add robust error handling for the XLSX/PDF import/export flows: show clear English toast messages for unsupported/empty files, file parse errors, and per-row validation failures; do not break existing entry create/edit/delete/list flows.",
+      "files": [
+        "frontend/src/pages/DataEntryPage.tsx",
+        "frontend/src/utils/entriesPdfExport.ts",
+        "frontend/src/utils/entriesXlsxExport.ts",
+        "frontend/src/utils/entriesXlsxImport.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-31"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

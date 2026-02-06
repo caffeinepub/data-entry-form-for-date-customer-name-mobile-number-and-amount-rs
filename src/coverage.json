@@ -1,0 +1,98 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-06T15:54:38.150Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 5,
+    "implemented": 5,
+    "items": [
+      {
+        "id": "REQ-27",
+        "summary": "Update the DataEntryPage \"Import / Export\" action area to provide exactly these three controls (and remove the current CSV/Text controls): \"Export XLSX\", \"Export PDF\", and \"Import XLSX\" (file picker). All user-facing labels and messages must be in English.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DataEntryPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DataEntryPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-28",
+        "summary": "Implement client-side \"Export XLSX\" so the user can download an .xlsx file generated from the currently loaded saved entries (the same dataset shown in EntriesTable). The exported sheet must include columns: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/entriesXlsxExport.ts",
+          "frontend/src/pages/DataEntryPage.tsx",
+          "frontend/src/types/xlsx.d.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/entriesXlsxExport.ts",
+          "frontend/src/pages/DataEntryPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-29",
+        "summary": "Implement client-side \"Export PDF\" so the user can download a PDF generated on the client containing a simple table of the currently loaded saved entries using the same columns as the XLSX export: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/entriesPdfExport.ts",
+          "frontend/src/pages/DataEntryPage.tsx",
+          "frontend/src/types/jspdf.d.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/entriesPdfExport.ts",
+          "frontend/src/pages/DataEntryPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-30",
+        "summary": "Implement \"Import XLSX\" so the user can select an .xlsx file, parse rows into entries, validate required fields (Manual Date, Customer Name, Mobile Number, Amount (Rs.) > 0) using the existing frontend validation rules, and create entries by calling the existing createEntry mutation for each valid row (respect authentication gating).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/entriesXlsxImport.ts",
+          "frontend/src/pages/DataEntryPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/entriesXlsxImport.ts",
+          "frontend/src/pages/DataEntryPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-31",
+        "summary": "Add robust error handling for the XLSX/PDF import/export flows: show clear English toast messages for unsupported/empty files, file parse errors, and per-row validation failures; do not break existing entry create/edit/delete/list flows.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DataEntryPage.tsx",
+          "frontend/src/utils/entriesXlsxImport.ts",
+          "frontend/src/utils/entriesXlsxExport.ts",
+          "frontend/src/utils/entriesPdfExport.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DataEntryPage.tsx",
+          "frontend/src/utils/entriesXlsxImport.ts",
+          "frontend/src/utils/entriesXlsxExport.ts",
+          "frontend/src/utils/entriesPdfExport.ts"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/pages/DataEntryPage.tsx",
+    "frontend/src/utils/entriesPdfExport.ts",
+    "frontend/src/utils/entriesXlsxExport.ts",
+    "frontend/src/utils/entriesXlsxImport.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

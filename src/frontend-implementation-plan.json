@@ -1,0 +1,134 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "XLSX import/export and PDF export in DataEntryPage Import / Export section",
+  "requirements": [
+    {
+      "id": "REQ-27",
+      "summary": "Replace Import / Export controls with exactly: Export XLSX, Export PDF, and Import XLSX (English-only labels/messages).",
+      "acceptanceCriteria": [
+        "In frontend/src/pages/DataEntryPage.tsx, the Import / Export card shows three controls: Export XLSX, Export PDF, Import XLSX.",
+        "The existing buttons \"Export CSV\", \"Export Text\", and \"Import CSV\" are no longer shown.",
+        "The file input only accepts .xlsx files (e.g., accept=\".xlsx\").",
+        "All user-facing text for these controls and any related toasts/errors is English-only."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DataEntryPage.tsx",
+          "operation": "modify",
+          "description": "Update the Import / Export card action area to remove CSV/Text controls and render exactly three controls: \"Export XLSX\", \"Export PDF\", and \"Import XLSX\" (hidden file input with accept=.xlsx). Ensure all labels/toasts for these controls are English-only. Use existing shadcn-ui Button/Input/Card for consistent UI; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "summary": "Implement client-side XLSX export for the currently loaded entries with the required columns and derived DAYS.",
+      "acceptanceCriteria": [
+        "Clicking \"Export XLSX\" downloads an .xlsx file when there is at least one loaded entry.",
+        "If there are no loaded entries, show an English error toast (e.g., \"No entries to export\").",
+        "The exported XLSX contains a header row with exactly: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At.",
+        "Each exported row matches the currently loaded entries (including DAYS derived from Manual Date)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/entriesXlsxExport.ts",
+          "operation": "create",
+          "description": "Add XLSX export utility that builds a sheet from the currently loaded entries using the exact header order: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At. Ensure DAYS is derived from Manual Date using existing date utilities and Created At is formatted consistently for export. Implement download behavior and throw clear Errors for empty datasets."
+        },
+        {
+          "path": "frontend/src/pages/DataEntryPage.tsx",
+          "operation": "modify",
+          "description": "Wire \"Export XLSX\" button to the new XLSX export utility, including English-only success/error toasts and the \"No entries to export\" empty-state toast. Use existing shadcn-ui Button; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/types/xlsx.d.ts",
+          "operation": "modify",
+          "description": "Replace the empty placeholder with minimal TypeScript declarations (or module stubs) required for the chosen XLSX library used by entriesXlsxExport/import so the project type-checks cleanly."
+        }
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "summary": "Implement client-side PDF export for the currently loaded entries as a readable table with the same columns as XLSX export.",
+      "acceptanceCriteria": [
+        "Clicking \"Export PDF\" downloads a .pdf file when there is at least one loaded entry.",
+        "If there are no loaded entries, show an English error toast (e.g., \"No entries to export\").",
+        "The PDF contains a readable table (or equivalent structured layout) with the same columns as XLSX export: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/entriesPdfExport.ts",
+          "operation": "create",
+          "description": "Add PDF export utility that generates a client-side PDF containing a readable table (or equivalent structured layout) for the currently loaded entries with columns: Manual Date, DAYS, Customer Name, Mobile Number, Amount (Rs.), Created At. Include basic pagination/line-wrapping safeguards for readability and throw clear Errors for empty datasets."
+        },
+        {
+          "path": "frontend/src/pages/DataEntryPage.tsx",
+          "operation": "modify",
+          "description": "Wire \"Export PDF\" button to the new PDF export utility, including English-only success/error toasts and the \"No entries to export\" empty-state toast. Use existing shadcn-ui Button; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/types/jspdf.d.ts",
+          "operation": "modify",
+          "description": "Replace the empty placeholder with minimal TypeScript declarations (or module stubs) required for the chosen PDF library used by entriesPdfExport so the project type-checks cleanly."
+        }
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "summary": "Implement XLSX import with authentication gating, parsing, validation using existing rules, createEntry mutation per valid row, and refresh + summary toast.",
+      "acceptanceCriteria": [
+        "When not authenticated, attempting to import shows the existing English sign-in prompt message and does not open the file picker.",
+        "When authenticated, selecting an .xlsx file parses rows into candidate entries.",
+        "Each row is validated using existing validation rules (required fields; digits-only mobile number with length check; Amount (Rs.) > 0).",
+        "Valid rows are imported by calling the existing createEntry mutation per row.",
+        "After import completes, the entries list query is invalidated/refreshed so the new entries appear in EntriesTable.",
+        "The UI shows an English summary toast indicating counts of successfully imported entries and failed rows."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/entriesXlsxImport.ts",
+          "operation": "modify",
+          "description": "Implement XLSX parsing logic (currently placeholder) to read the selected .xlsx file on the client, map headers to fields (Manual Date, Customer Name, Mobile Number, Amount (Rs.)), and return { validRows, errors } similar to the existing CSV import utility. Reuse existing validation helpers to validate each row and preserve per-row error details for summary reporting."
+        },
+        {
+          "path": "frontend/src/pages/DataEntryPage.tsx",
+          "operation": "modify",
+          "description": "Update import flow to: (1) block unauthenticated users with the existing English sign-in prompt and do not open file picker, (2) accept only .xlsx via file input accept, (3) parse XLSX via entriesXlsxImport, (4) call the existing createEntry mutation for each valid row, (5) invalidate/refresh the entries query key on completion, and (6) show an English summary toast with success/failure counts. Use existing shadcn-ui Input/Button patterns; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "summary": "Add robust English-only error handling for XLSX/PDF import/export without breaking existing CRUD and table flows.",
+      "acceptanceCriteria": [
+        "Selecting a non-.xlsx file for import shows an English error toast (e.g., \"Please select a valid XLSX file\").",
+        "Selecting an empty or unreadable XLSX file shows an English error toast describing the problem.",
+        "If the XLSX contains rows but none are valid, an English error toast explains that no valid rows were found.",
+        "Per-row validation failures are handled without crashing the import; the import continues for other rows and the final summary reflects failures.",
+        "Existing CRUD operations and EntriesTable rendering continue to work as before."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DataEntryPage.tsx",
+          "operation": "modify",
+          "description": "Harden XLSX/PDF import/export handlers with clear English-only toasts for: wrong file extension/type, empty/unreadable XLSX, parse errors, zero valid rows, and partial failures. Ensure import continues across rows and final summary reflects per-row failures. Keep existing create/edit/delete/list flows unchanged and avoid regressions. Use existing shadcn-ui and sonner toast patterns; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/utils/entriesXlsxImport.ts",
+          "operation": "modify",
+          "description": "Add defensive checks and error messages for unsupported/empty/unreadable XLSX files, header issues, and per-row parse/validation failures, returning structured errors without throwing where possible so the UI can continue importing other rows safely."
+        },
+        {
+          "path": "frontend/src/utils/entriesXlsxExport.ts",
+          "operation": "modify",
+          "description": "Ensure XLSX export utility surfaces actionable Errors for empty datasets and unexpected serialization failures so the UI can show clear English toasts without crashing."
+        },
+        {
+          "path": "frontend/src/utils/entriesPdfExport.ts",
+          "operation": "modify",
+          "description": "Ensure PDF export utility surfaces actionable Errors for empty datasets and PDF generation failures so the UI can show clear English toasts without crashing."
+        }
+      ]
+    }
+  ]
+}
